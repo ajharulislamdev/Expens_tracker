@@ -21,6 +21,8 @@ class TransactionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = tx.isIncome ? AppColors.income : AppColors.expense;
+    final transactionDate =
+        '${tx.category} • ${DateFormat('d MMM y, h:mm a').format(tx.date)}';
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
@@ -28,14 +30,15 @@ class TransactionTile extends StatelessWidget {
         child: Icon(AppConstants.iconFor(tx.category), color: color),
       ),
       title: Text(tx.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Obx(
-        () => Text(
-          remainingBalance == null
-              ? '${tx.category} • ${DateFormat('d MMM y, h:mm a').format(tx.date)}'
-              : '${tx.category} • ${DateFormat('d MMM y, h:mm a').format(tx.date)}\n'
-                  'Balance after transaction: ${CurrencyFormatter.format(remainingBalance!)}',
-        ),
-      ),
+      subtitle: remainingBalance == null
+          ? Text(transactionDate)
+          : Obx(
+              () => Text(
+                '$transactionDate\n'
+                'Balance after transaction: '
+                '${CurrencyFormatter.format(remainingBalance!)}',
+              ),
+            ),
       trailing: Obx(
         () => Text(
           '${tx.isIncome ? '+' : '-'}${CurrencyFormatter.format(tx.amount)}',

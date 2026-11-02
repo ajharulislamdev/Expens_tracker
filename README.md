@@ -1,50 +1,88 @@
-# Expense Tracker (Flutter 3.24 · GetX · Hive)
+<div align="center">
+  <img src="assets/app_icon.png" alt="Expense Tracker icon" width="104" />
+  <h1>Expense Tracker</h1>
+  <p>A clean, offline-first Flutter app for tracking spending, income, savings goals, and budgets.</p>
+  <p>
+    <a href="https://github.com/ajharulislamdev/Expens_tracker/releases/latest">Download for Android</a>
+    ·
+    <a href="https://github.com/ajharulislamdev/Expens_tracker/issues">Report an issue</a>
+  </p>
+</div>
 
-Fully offline expense tracker.
+## Screenshots
+
+These previews use fictional sample data.
+
+<div align="center">
+  <img src="docs/screenshots/dashboard.png" alt="Expense Tracker dashboard" width="24%" />
+  <img src="docs/screenshots/reports.png" alt="Expense and income reports" width="24%" />
+  <img src="docs/screenshots/goals-budgets.png" alt="Savings goals and monthly budgets" width="24%" />
+  <img src="docs/screenshots/auth.png" alt="Create account screen" width="24%" />
+</div>
 
 ## Features
-- Dashboard: Daily / Weekly / Monthly income, expense, balance, spending by category, recent items
-- Transactions: add, edit, delete (swipe left, with Undo), search, filter by type / category / date range, sort by date or amount
-- Reports: expense and income analytics, category breakdowns, and exports for a chosen period (**PDF** or **Excel**)
-- Goals & budgets: create, edit, update progress, and delete savings goals and monthly budgets; plans are saved locally with Hive, and budget spending is entered manually
-- Local account: create/sign in, edit profile details, change password, choose a local profile photo, sign out, or delete the profile
-- Profile photos and account details are stored on-device in Hive; passwords are salted and hashed. Local sign-in does not encrypt transaction or plan data.
-- Exports saved to `Download/ExpenseTracker` with a safe fallback
 
-## Setup
-This archive contains `lib/`, `pubspec.yaml` and config only. Create the platform folders first:
+- **Dashboard:** View your balance, income, expenses, and recent transactions by day, week, or month.
+- **Transactions:** Add, edit, delete, search, filter, and sort income and expense entries.
+- **Reports:** Explore category breakdowns and compare periods; export reports as PDF or Excel.
+- **Goals and budgets:** Create and manage savings goals and monthly spending limits.
+- **Flexible currency:** Choose a supported currency or add a custom symbol.
+- **Local sign-in:** Create a profile using a mobile number and six-digit PIN. Existing password-based profiles remain supported.
+- **PIN recovery:** Verify the current PIN or legacy password before setting a new PIN.
+- **Daily reminder:** Schedule a local reminder to record expenses.
+- **Local profile settings:** Edit profile details, choose a photo, change your PIN, or sign out.
+
+## Download
+
+Download the latest Android APK from [GitHub Releases](https://github.com/ajharulislamdev/Expens_tracker/releases/latest).
+
+The current Android release build uses the debug signing configuration in [`android/app/build.gradle.kts`](android/app/build.gradle.kts). It is suitable for evaluation and sideloading, but configure a private release keystore before distributing production updates.
+
+## Run from source
+
+### Requirements
+
+- Flutter 3.24 or newer
+- Dart 3.5 or newer
+- Android Studio/Xcode for the platform you want to run
 
 ```bash
-./setup.sh          # runs: flutter create ... && flutter pub get
+git clone https://github.com/ajharulislamdev/Expens_tracker.git
+cd Expens_tracker
+flutter pub get
+flutter run
 ```
 
-Then add the permissions from `docs/AndroidManifest_snippet.xml` to
-`android/app/src/main/AndroidManifest.xml` and run `flutter run`.
+To create an Android APK:
 
-If you already have a project, copy `lib/` and `pubspec.yaml` into it and run `flutter pub get`.
+```bash
+flutter build apk --release
+```
+
+## Tech stack
+
+- Flutter and Dart
+- GetX for state management and navigation
+- Hive for on-device storage
+- Custom-painted charts for report visualizations
+- PDF and Excel export
+- Local notifications
 
 ## Architecture
+
+```text
+View → GetX controller → Repository → HiveProvider → Hive
 ```
-View -> Controller (GetX) -> Repository -> HiveProvider -> Hive box
-```
-- `lib/app` bindings, routes, theme
-- `lib/core` constants, utils, services (storage / pdf / excel)
-- `lib/data` models + hand-written Hive adapters, provider, repository
-- `lib/modules` home, transactions, reports (controllers / views / widgets)
 
-No `build_runner` is needed: Hive adapters are written by hand.
+- `lib/app` — bindings, routes, and themes
+- `lib/core` — constants, utilities, and services
+- `lib/data` — models, repositories, and Hive provider
+- `lib/modules` — authentication, dashboard, plans, reports, and transactions
 
-## Export location logic (`StorageService`)
-1. Try `/storage/emulated/0/Download/ExpenseTracker` (create + write test)
-2. Request storage permission, retry
-3. Request All-files access (Android 11+), retry
-4. Fall back to the app's external folder (`Android/data/<package>/files/ExpenseTracker`) and tell the user
+Hive adapters are maintained in source; code generation is not required.
 
-## Customising
-- Currency: `AppConstants.currencySymbol` / `currencyCode`
-- Categories: `AppConstants.expenseCategories` / `incomeCategories`
-- PDF uses the built-in Helvetica font, so non-Latin text (e.g. Bengali) in titles will not render in the PDF. To support it, load a TTF (e.g. Noto Sans Bengali) with `pw.Font.ttf` and pass it to `pw.ThemeData.withFont`.
-- Excel handles any language.
+## Privacy and storage
 
-## Notes
-- This code was written without a Flutter SDK in the build environment, so it has not been compiled here. If `flutter analyze` reports anything after `pub get`, send me the output and I'll fix it.
+The app stores profiles, transactions, goals, budgets, and settings locally on the device. It does not require an email address or send this data to a backend. Sign-in credentials are salted and hashed, but local sign-in does not encrypt transaction or plan data. Keep a separate backup of important information.
+
+PDF and Excel exports are saved to `Download/ExpenseTracker` when the platform allows it, with an app-specific storage fallback.
